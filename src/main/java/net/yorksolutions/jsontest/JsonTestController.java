@@ -1,9 +1,6 @@
 package net.yorksolutions.jsontest;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -32,8 +29,18 @@ public class JsonTestController {
         return this.jsonTestService.getDate();
     }
 
-    @GetMapping("/{param1}/{param2}")
+    @GetMapping("/echo/{param1}/{param2}")
     public HashMap echoJson(@PathVariable String param1,@PathVariable String param2){
         return this.jsonTestService.echoJson(param1,param2);
+    }
+
+    @GetMapping("/md5/{text}")
+    public HashMap echoJson(@PathVariable String text){
+        return this.jsonTestService.md5(text);
+    }
+
+    @GetMapping("/code")
+    public String code(){
+        return this.jsonTestService.code();
     }
 }

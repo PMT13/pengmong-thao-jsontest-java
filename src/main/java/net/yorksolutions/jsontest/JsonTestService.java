@@ -2,8 +2,12 @@ package net.yorksolutions.jsontest;
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestHeader;
+
+import javax.xml.bind.DatatypeConverter;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -62,5 +66,29 @@ public class JsonTestService {
         map.put(param1,param2);
         map.put("key","value");
         return map;
+    }
+
+    //https://www.baeldung.com/java-md5
+    public HashMap md5(String inputText){
+        HashMap map = new HashMap();
+        try {
+            String text = inputText;
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            md.update(text.getBytes());
+            byte[] digest = md.digest();
+            String myHash = DatatypeConverter.printHexBinary(digest).toLowerCase();
+            map.put("text", inputText);
+            map.put("md5", myHash);
+        }catch (NoSuchAlgorithmException e){
+            e.printStackTrace();
+        }
+        return map;
+    }
+
+    public String code(){
+        this.getIp();
+        this.getDate();
+        String alerts = "alert(\" Your IP address is: " + this.ip + "\");";
+        return alerts;
     }
 }
