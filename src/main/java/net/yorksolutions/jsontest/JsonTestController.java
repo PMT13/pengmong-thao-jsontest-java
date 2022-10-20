@@ -43,4 +43,9 @@ public class JsonTestController {
     public String code(){
         return this.jsonTestService.code();
     }
+
+    @GetMapping("/validate")
+    public HashMap jsonValidator(@RequestParam String json){
+        return this.jsonTestService.jsonValidator(json);
+    }
 }

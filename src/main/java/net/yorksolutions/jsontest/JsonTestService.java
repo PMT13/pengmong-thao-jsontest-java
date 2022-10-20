@@ -1,5 +1,6 @@
 package net.yorksolutions.jsontest;
 
+import org.json.JSONArray;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestHeader;
 
@@ -14,6 +15,8 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
+import org.json.JSONObject;
+import org.json.JSONException;
 
 @Service
 public class JsonTestService {
@@ -90,5 +93,35 @@ public class JsonTestService {
         this.getDate();
         String alerts = "alert(\" Your IP address is: " + this.ip + "\");";
         return alerts;
+    }
+
+    public HashMap jsonValidator(String jsonString){
+        HashMap map = new HashMap();
+        try {
+            String type = "";
+            boolean isEmpty = false;
+            if(jsonString.charAt(0) == '{'){
+                type = "object";
+                JSONObject object = new JSONObject(jsonString);
+                int num = object.length();
+                map.put("size",num);
+                isEmpty = object.isEmpty();
+            }
+            if(jsonString.charAt(0) == '['){
+                type = "array";
+                JSONArray array = new JSONArray(jsonString);
+                int num = array.length();
+                map.put("size",num);
+                isEmpty = array.isEmpty();
+            }
+            map.put("valid",true);
+            map.put("object_or_array",type);
+            map.put("empty",isEmpty);
+        } catch (JSONException e) {
+            map.put("valid",false);
+            map.put("error",e.getMessage());
+            map.put("error_info","This error came from the org.json reference parser.");
+        }
+        return map;
     }
 }
