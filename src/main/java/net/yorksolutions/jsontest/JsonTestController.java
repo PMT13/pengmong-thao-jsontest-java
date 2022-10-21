@@ -2,6 +2,8 @@ package net.yorksolutions.jsontest;
 
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -29,13 +31,13 @@ public class JsonTestController {
         return this.jsonTestService.getDate();
     }
 
-    @GetMapping("/echo/{param1}/{param2}")
-    public HashMap echoJson(@PathVariable String param1,@PathVariable String param2){
-        return this.jsonTestService.echoJson(param1,param2);
+    @GetMapping("/echo/**")
+    public HashMap echoJson(HttpServletRequest request){
+        return this.jsonTestService.echoJson(request);
     }
 
-    @GetMapping("/md5/{text}")
-    public HashMap echoJson(@PathVariable String text){
+    @GetMapping("/md5")
+    public HashMap echoJson(@RequestParam String text){
         return this.jsonTestService.md5(text);
     }
 
@@ -47,5 +49,10 @@ public class JsonTestController {
     @GetMapping("/validate")
     public HashMap jsonValidator(@RequestParam String json){
         return this.jsonTestService.jsonValidator(json);
+    }
+
+    @GetMapping("/cookie")
+    public HashMap cookie(HttpServletResponse response){
+        return this.jsonTestService.cookie(response);
     }
 }

@@ -4,7 +4,11 @@ import org.json.JSONArray;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestHeader;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.xml.bind.DatatypeConverter;
+import java.lang.reflect.Array;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.security.MessageDigest;
@@ -64,10 +68,18 @@ public class JsonTestService {
         return map;
     }
 
-    public HashMap echoJson(String param1, String param2){
+    public HashMap echoJson(HttpServletRequest request){
         HashMap map = new HashMap();
-        map.put(param1,param2);
-        map.put("key","value");
+        String url = request.getServletPath();
+        String[] paths = url.split("/");
+        System.out.println(paths);
+        for(int i = 2; i < paths.length;i += 2){
+            if(i + 1 < paths.length){
+                map.put(paths[i],paths[i+1]);
+            }else{
+                map.put(paths[i],"");
+            }
+        }
         return map;
     }
 
@@ -80,7 +92,7 @@ public class JsonTestService {
             md.update(text.getBytes());
             byte[] digest = md.digest();
             String myHash = DatatypeConverter.printHexBinary(digest).toLowerCase();
-            map.put("text", inputText);
+            map.put("original", inputText);
             map.put("md5", myHash);
         }catch (NoSuchAlgorithmException e){
             e.printStackTrace();
@@ -97,31 +109,40 @@ public class JsonTestService {
 
     public HashMap jsonValidator(String jsonString){
         HashMap map = new HashMap();
+        String type = "";
+        int num = 0;
         try {
-            String type = "";
             boolean isEmpty = false;
             if(jsonString.charAt(0) == '{'){
                 type = "object";
                 JSONObject object = new JSONObject(jsonString);
-                int num = object.length();
-                map.put("size",num);
+                num = object.length();
                 isEmpty = object.isEmpty();
             }
             if(jsonString.charAt(0) == '['){
                 type = "array";
                 JSONArray array = new JSONArray(jsonString);
-                int num = array.length();
-                map.put("size",num);
+                num = array.length();
                 isEmpty = array.isEmpty();
             }
             map.put("valid",true);
             map.put("object_or_array",type);
+            map.put("size",num);
             map.put("empty",isEmpty);
         } catch (JSONException e) {
             map.put("valid",false);
+            map.put("object_or_array",type);
             map.put("error",e.getMessage());
             map.put("error_info","This error came from the org.json reference parser.");
         }
+        return map;
+    }
+
+    public HashMap cookie(HttpServletResponse response){
+        HashMap map = new HashMap();
+        Cookie cookie = new Cookie("jsontestdotcom", "" + Instant.now().toEpochMilli());
+        response.addCookie(cookie);
+        map.put("cookie_status", "Cookie set with name jsontestdotcom");
         return map;
     }
 }
